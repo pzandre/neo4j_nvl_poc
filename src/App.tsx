@@ -175,7 +175,7 @@ export const App = () => {
     <div
       style={{
         width: "100%",
-        height: "115vh",
+        height: "85vh",
         background: "white",
         position: "relative"
       }}

@@ -8,6 +8,6 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    allowedHosts: ['localhost', '58ff-2804-13b4-85ac-a501-19a9-22b7-9a62-7a8e.ngrok-free.app']
+    allowedHosts: ['localhost', 'cf30-2804-13b4-85ac-a501-19a9-22b7-9a62-7a8e.ngrok-free.app']
   }
 })
