@@ -114,15 +114,15 @@ export const App = () => {
             onNodeDoubleClick: (node) => {
               expandNode(node);
             },
-            onNodeClick: async (node) => {
-                const [nodeType, nodeId] = node.id.split("#___#");
-                // TODO: Open modal with nodeInfo data
-                // check type, if valid ones (like publications or authors) call backend
-                // to fetch more data from Postgres DB and Django's Slug
-            },
-            onCanvasClick: () => {
-              nvlRef.current?.resetZoom();
-            },
+            // onNodeClick: async (node) => {
+            //     const [nodeType, nodeId] = node.id.split("#___#");
+            //     // TODO: Open modal with nodeInfo data
+            //     // check type, if valid ones (like publications or authors) call backend
+            //     // to fetch more data from Postgres DB and Django's Slug
+            // },
+            // onCanvasClick: () => {
+            //   nvlRef.current?.resetZoom();
+            // },
             onDrag(nodes, evt) {
               nvlRef.current?.setNodePositions(nodes, true);
             },
