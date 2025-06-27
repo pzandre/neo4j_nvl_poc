@@ -2,14 +2,14 @@ import React, { useEffect, useRef, useState, useCallback, useMemo } from "react"
 import { InteractiveNvlWrapper } from "@neo4j-nvl/react";
 import NVL, { Node, Relationship } from "@neo4j-nvl/base";
 import { connect } from "./connections";
-import { styleGraph } from "./styling";
+import { styleGraph, typeColorMap } from "./styling";
 
 const COLOR_MAP_TO_TYPE: Record<string, string> = {
-  "blue": "Publication",
-  "green": "Year", 
-  "orange": "Language",
-  "purple": "Author",
-  "red": "Publisher"
+  "#68BDF6": "Publication",
+  "#6DCE9E": "Year", 
+  "#FFD86E": "Language",
+  "#DE9BF9": "Author",
+  "#FB95AF": "Publisher"
 };
 
 const INITIAL_QUERY_PARAMS = {
@@ -115,20 +115,27 @@ export const App = () => {
   }), [expandNode, isLoading]);
 
   const legendItems = useMemo(() => 
-    Object.entries(COLOR_MAP_TO_TYPE).map(([color, type]) => (
-      <div key={color} style={{ 
+    Array.from(typeColorMap.entries()).map(([type, color]) => (
+      <div key={type} style={{ 
         display: "flex", 
         alignItems: "center", 
         marginTop: "5px" 
       }}>
         <div style={{
-          width: "12px",
-          height: "12px",
+          width: "14px",
+          height: "14px",
           backgroundColor: color,
           borderRadius: "50%",
-          marginRight: "8px"
+          marginRight: "8px",
+          border: "1px solid rgba(0,0,0,0.2)",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.15)"
         }}></div>
-        <span>{type}</span>
+        <span style={{ 
+          fontSize: "12px", 
+          color: "#4a5568",
+          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+          fontWeight: "400"
+        }}>{type}</span>
       </div>
     )), []
   );
@@ -168,11 +175,25 @@ export const App = () => {
     <div
       style={{
         width: "100%",
-        height: "95vh",
-        background: "linear-gradient(to right, white, lightgrey)",
+        height: "115vh",
+        background: "white",
         position: "relative"
       }}
     >
+      <style>{`
+        .nvl-node-caption {
+          fill: white !important;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+          font-weight: 500 !important;
+          font-size: 12px !important;
+        }
+        .nvl-relationship-caption {
+          fill: #666 !important;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+          font-size: 10px !important;
+        }
+      `}</style>
+      
       <InteractiveNvlWrapper
         ref={nvlRef}
         nodes={nodes}
@@ -207,7 +228,8 @@ export const App = () => {
           color: "white",
           padding: "10px 15px",
           borderRadius: "5px",
-          fontSize: "14px"
+          fontSize: "14px",
+          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
         }}>
           {nodes.length === 0 ? "Loading graph..." : "Expanding graph..."}
         </div>
@@ -218,17 +240,32 @@ export const App = () => {
         position: "absolute",
         top: "20px",
         left: "20px",
-        background: "rgba(255, 255, 255, 0.9)",
-        padding: "10px 15px",
-        borderRadius: "5px",
+        background: "rgba(255, 255, 255, 0.95)",
+        padding: "12px 16px",
+        borderRadius: "8px",
         fontSize: "12px",
-        maxWidth: "250px"
+        maxWidth: "280px",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+        border: "1px solid rgba(0,0,0,0.1)",
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
       }}>
-        <strong>Instructions:</strong><br/>
-        • Double-click Publication nodes (blue) to expand<br/>
-        • Right-click canvas to reset zoom<br/>
-        • Drag to reposition nodes<br/>
-        • Drag canvas to pan around<br/>          
+        <strong style={{ 
+          color: "#333", 
+          fontSize: "13px",
+          fontWeight: "600",
+          letterSpacing: "-0.025em"
+        }}>Neo4j Graph Explorer</strong><br/>
+        <div style={{ 
+          marginTop: "8px", 
+          lineHeight: "1.4",
+          color: "#4a5568",
+          fontSize: "12px"
+        }}>
+          • Double-click nodes to expand<br/>
+          • Right-click canvas to reset zoom<br/>
+          • Drag nodes to reposition<br/>
+          • Drag canvas to pan around
+        </div>
       </div>
       
       {/* Legend/Caption */}
@@ -236,14 +273,24 @@ export const App = () => {
         position: "absolute",
         bottom: "20px",
         left: "20px",
-        background: "rgba(255, 255, 255, 0.9)",
-        padding: "15px",
-        borderRadius: "5px",
+        background: "rgba(255, 255, 255, 0.95)",
+        padding: "12px 16px",
+        borderRadius: "8px",
         fontSize: "12px",
-        minWidth: "150px"
+        minWidth: "160px",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+        border: "1px solid rgba(0,0,0,0.1)",
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
       }}>
-        <strong>Node Types:</strong><br/>
-        {legendItems}
+        <strong style={{ 
+          color: "#333", 
+          fontSize: "13px",
+          fontWeight: "600",
+          letterSpacing: "-0.025em"
+        }}>Node Types:</strong>
+        <div style={{ marginTop: "8px" }}>
+          {legendItems}
+        </div>
       </div>
     </div>
   );

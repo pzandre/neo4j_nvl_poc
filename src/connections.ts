@@ -5,7 +5,6 @@ interface ApiResponse {
   data: {
     nodes: Array<{
       id: string;
-      color: string;
       caption: string;
       type: string;
       selected: boolean;
@@ -69,7 +68,6 @@ export const connect = async (
     const nodes: Node[] = data.data.nodes.map(node => {
       const record = {
         id: node.id,
-        color: node.color,
         caption: node.caption,
         type: node.type,
         activated: node.activated ?? false,

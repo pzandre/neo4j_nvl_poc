@@ -2,26 +2,26 @@ import { Node, Relationship } from "@neo4j-nvl/base";
 import { RecordShape } from "neo4j-driver";
 
 const colorPalette = [
-  "#4D8DDA", // Blue for Publications
-  "#8DCC93", // Green for Years
-  "#F79767", // Orange for Languages
-  "#C990C0", // Purple for Authors
-  "#F16767", // Red for Publishers
-  "#FFDF81",
-  "#56C7E4",
-  "#D8C7AE",
-  "#ECB4C9",
-  "#FFC354",
-  "#DA7294",
-  "#579380",
+  "#68BDF6", // Neo4j blue for Publications
+  "#6DCE9E", // Neo4j green for Years
+  "#FFD86E", // Neo4j yellow for Languages
+  "#DE9BF9", // Neo4j purple for Authors
+  "#FB95AF", // Neo4j pink for Publishers
+  "#FF7E79", // Neo4j red
+  "#4C8EDA", // Darker blue
+  "#57C7E3", // Cyan
+  "#F79767", // Orange
+  "#C990C0", // Light purple
+  "#D8C7AE", // Beige
+  "#579380", // Teal
 ];
 
 const typeColorMap = new Map([
-  ["Publication", "#4D8DDA"],
-  ["Year", "#8DCC93"],
-  ["Language", "#F79767"],
-  ["Author", "#C990C0"],
-  ["Publisher", "#F16767"],
+  ["Publication", "#68BDF6"], // Neo4j signature blue
+  ["Year", "#6DCE9E"],        // Neo4j green
+  ["Language", "#FFD86E"],    // Neo4j yellow
+  ["Author", "#DE9BF9"],      // Neo4j purple
+  ["Publisher", "#FB95AF"],   // Neo4j pink
 ]);
 
 let colorIndex = 5; // Start after predefined colors
@@ -152,28 +152,61 @@ export const styleGraph = (
   const styledNodes: Node[] = data.nodes.map((node, index) => {
     // Extract type from node ID format (type#___#id)
     const [nodeType] = node.id.split("#___#");
-    const displayType = nodeType || node.type || "Unknown";
+    const displayType = nodeType ||  "Unknown";
+    const nodeColor = getUniqueColorForType(displayType) || "#999";
     
     const styledNode = {
       ...node,
-      color: node.color || getUniqueColorForType(displayType),
-      captions: node.caption ? [{ value: node.caption }] : [{ value: displayType }],
+      color: nodeColor,
+      // Neo4j style captions - show main property as primary caption
+      captions: node.caption 
+        ? [{ value: node.caption, fontSize: "12px", color: "#333" }] 
+        : [{ value: displayType, fontSize: "11px", color: "#666" }],
       size: getNodeSize(displayType, node),
       selected: node.selected ?? false,
       activated: node.activated ?? false,
-      // Don't pin nodes to allow for more fluid movement
       pinned: false,
+      // Neo4j style borders and shadows
+      borderWidth: node.selected ? 3 : (node.activated ? 2 : 1),
+      borderColor: node.selected ? "#333" : (node.activated ? darkenColor(nodeColor, 0.3) : darkenColor(nodeColor, 0.2)),
+      // Add subtle shadow for depth
+      shadowColor: "rgba(0,0,0,0.15)",
+      shadowBlur: 4,
+      shadowOffsetX: 1,
+      shadowOffsetY: 1,
+      // Text styling
+      fontSize: 12,
+      fontFamily: "system-ui, -apple-system, sans-serif",
+      textColor: "#333",
+      textOutlineColor: "rgba(255,255,255,0.8)",
+      textOutlineWidth: 1,
     };
 
     return styledNode;
   });
 
   const styledRelationships = data.relationships.map((rel) => {
+    const relType = rel?.type || "RELATED";
+    
     return {
       ...rel,
-      captions: [{ value: rel?.type || "CONNECTED" }],
+      captions: [{ 
+        value: relType, 
+        fontSize: "10px", 
+        color: "#666",
+        backgroundColor: "rgba(255,255,255,0.9)",
+        padding: "2px 4px",
+        borderRadius: "3px"
+      }],
       width: 2,
-      color: "#666666",
+      color: "#999",
+      // Neo4j style relationship arrows
+      arrowColor: "#999",
+      arrowSize: 8,
+      // Subtle styling for better visibility
+      opacity: 0.8,
+      // Curve relationships slightly for better aesthetics
+      curvature: 0.1,
     };
   });
 
@@ -189,14 +222,31 @@ export const styleGraph = (
 // Helper function to determine node size based on type and properties
 const getNodeSize = (type: string, node: Node): number => {
   const baseSizes: Record<string, number> = {
-    "Publication": 35,
-    "Author": 28,
-    "Publisher": 32,
-    "Year": 22,
-    "Language": 22,
+    "Publication": 40,  // Larger for main entities
+    "Author": 32,       // Medium for important entities
+    "Publisher": 35,    // Medium-large
+    "Year": 25,         // Smaller for attributes
+    "Language": 25,     // Smaller for attributes
   };
 
-  return baseSizes[type] || 28;
+  // Add some variation based on node importance or connections
+  const baseSize = baseSizes[type] || 30;
+  
+  // You could add logic here to vary size based on node properties
+  // For example: number of connections, importance score, etc.
+  
+  return baseSize;
+};
+
+// Helper function to darken a color for borders
+const darkenColor = (color: string, factor: number): string => {
+  // Simple color darkening - convert hex to RGB, darken, convert back
+  const hex = color.replace('#', '');
+  const r = Math.max(0, Math.floor(parseInt(hex.substr(0, 2), 16) * (1 - factor)));
+  const g = Math.max(0, Math.floor(parseInt(hex.substr(2, 2), 16) * (1 - factor)));
+  const b = Math.max(0, Math.floor(parseInt(hex.substr(4, 2), 16) * (1 - factor)));
+  
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
 };
 
 // Export for use in other components
