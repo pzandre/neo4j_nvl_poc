@@ -190,6 +190,13 @@ export const App = () => {
         nodes={nodes}
         rels={relationships}
         mouseEventCallbacks={mouseEventCallbacks}
+        nvlOptions={
+          {
+            allowDynamicMinZoom: true,
+            layout: "forceDirected",
+            renderer: "canvas"
+          }
+        }
       />
       
       {/* Error indicator */}
