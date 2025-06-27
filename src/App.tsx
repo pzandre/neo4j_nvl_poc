@@ -95,23 +95,14 @@ export const App = () => {
   }, [extractId, expandedNodes, isLoading]);
 
   const mouseEventCallbacks = useMemo(() => ({
-    onZoom(zoomLevel: number) {
-      if (isLoading) return;
-      nvlRef.current?.setZoom(zoomLevel);
-    },
+    onDrag: true,
+    onPan: true,
+    onZoom: true,
     onNodeDoubleClick: expandNode,
-    onDrag(draggedNodes: Node[]) {
-      // Allow fluid dragging with animation
-      nvlRef.current?.setNodePositions(draggedNodes, true);
-    },
     onCanvasRightClick: (evt: Event) => {
       evt.preventDefault();
       nvlRef.current?.resetZoom();
     },
-    onPan: (coordinates: { x: number; y: number }) => {
-      if (isLoading) return;
-      nvlRef.current?.setPan(coordinates.x, coordinates.y);
-    }
   }), [expandNode, isLoading]);
 
   const legendItems = useMemo(() => 
